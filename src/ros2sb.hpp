@@ -10,3 +10,27 @@
     See the License for the specific language governing permissions and
     limitations under the License.
 */
+
+#ifndef _ROS2_SB_
+#define _ROS2_SB_
+
+#include <WiFi.h>
+#include <WiFiUdp.h>
+#include <ros2arduino.h>
+
+class ROS2SB : public ros2::Node{
+private:
+    template <typename MT> static void cbSub(MT, void *);
+    static void cbPub(void *);
+    static void watchUART(void *);
+public:
+    static ROS2SB* thisPtr;
+    ROS2SB(HardwareSerial);
+    ROS2SB(String, String, int, int);
+    template <typename MT> void setPublishMsg(MT);
+    template <typename MT> void getSubscribeMsg(MT);
+    template <typename MT> void sendUART(MT);
+    void begin();
+    void stop();
+}
+#endif 

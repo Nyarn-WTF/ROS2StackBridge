@@ -10,3 +10,44 @@
     See the License for the specific language governing permissions and
     limitations under the License.
 */
+
+#include <ros2sb.hpp>
+
+ROS2SB::ROS2SB(HardwareSerial UART){
+    ROS2SB::thisPtr = this;
+}
+
+ROS2SB::ROS2SB(String ssid, String pw, int agip, int agport){
+    ROS2SB::thisPtr = this;
+}
+
+template <typename MT> static void cbSub(MT msg, void *arg){
+
+}
+static void cbPub(void *){
+
+}
+
+static void watchUART(void *){
+    
+}
+
+template <typename MT> void ROS2SB::setPublishMsg(MT msg){
+
+}
+
+template <typename MT> void ROS2SB::getSubscribeMsg(MT msg){
+
+}
+
+template <typename MT> void sendUART(MT msg){
+
+}
+
+void begin(){
+
+}
+
+void stop(){
+
+}
