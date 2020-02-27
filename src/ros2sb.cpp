@@ -12,8 +12,8 @@
 */
 
 #include <ros2sb.hpp>
-
-ROS2SB::ROS2SB(HardwareSerial USB):Node("StackBridge"){
+template <typename MT>
+ROS2SB<MT>::ROS2SB(HardwareSerial USB):Node("StackBridge"){
     ROS2SB::thisPtr = this;
     this->USB = &USB;
     this->USB->begin(115200);
@@ -21,7 +21,8 @@ ROS2SB::ROS2SB(HardwareSerial USB):Node("StackBridge"){
     ros2::init(this->USB);
 }
 
-ROS2SB::ROS2SB(String ssid, String pw, String agip, uint16_t agport):Node("StackBridge"){
+template <typename MT>
+ROS2SB<MT>::ROS2SB(String ssid, String pw, String agip, uint16_t agport):Node("StackBridge"){
     ROS2SB::thisPtr = this;
     this->udp = new WiFiUDP();
     WiFi.begin(ssid.c_str(), pw.c_str());
@@ -41,26 +42,31 @@ static void watchUART(void *){
 
 }
 
-template <typename MT> void ROS2SB::setPublishMsg(MT msg){
+template <typename MT> 
+void ROS2SB<MT>::setPublishMsg(MT msg){
 
 }
 
-template <typename MT> void ROS2SB::getSubscribeMsg(MT msg){
+template <typename MT> 
+void ROS2SB<MT>::getSubscribeMsg(MT msg){
 
 }
 
-template <typename MT> void ROS2SB::sendUART(MT msg){
+template <typename MT> 
+void ROS2SB<MT>::sendUART(MT msg){
 
 }
 
-template <typename MT> void ROS2SB::begin(String subTpName, String pubTpName){
+template <typename MT> 
+void ROS2SB<MT>::begin(String subTpName, String pubTpName){
     this->createSubscriber<MT>(subTpName.c_str(), (ros2::CallbackFunc)this->cbSub, nullptr);
     this->_publisher = this->createPublisher<MT>(pubTpName.c_str());
     xTaskCreatePinnedToCore(this->cbPub, "Pub", 1024*8, NULL, 1, this->Pub, CONFIG_ARDUINO_RUN_CORE1);
     xTaskCreatePinnedToCore(this->watchUART, "Uartrx", 1024*8, NULL, 1, this->Uartrx, CONFIG_ARDUINO_RUN_CORE1);
 }
 
-template <typename MT> void ROS2SB::stop(String subTpName, String pubTpName){
+template <typename MT> 
+void ROS2SB<MT>::stop(String subTpName, String pubTpName){
     this->deleteSubscriber(subTpName.c_str());
     this->deletePublisher(pubTpName.c_str());
     vTaskDelete(this->Pub);
