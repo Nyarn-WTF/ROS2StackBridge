@@ -20,17 +20,22 @@
 
 class ROS2SB : public ros2::Node{
 private:
+    QueueHandle_t SemPubMsg, SemSubMsg;
+    WiFiUDP *udp;
+    HardwareSerial *UART, *USB;
+    TaskHandle_t Pub, Uartrx;
+    void *_publisher;
     template <typename MT> static void cbSub(MT, void *);
     static void cbPub(void *);
     static void watchUART(void *);
 public:
     static ROS2SB* thisPtr;
     ROS2SB(HardwareSerial);
-    ROS2SB(String, String, int, int);
+    ROS2SB(String, String, String, uint16_t);
     template <typename MT> void setPublishMsg(MT);
     template <typename MT> void getSubscribeMsg(MT);
     template <typename MT> void sendUART(MT);
-    void begin();
-    void stop();
+    template <typename MT> void begin(String, String);
+    template <typename MT> void stop(String, String);
 }
 #endif 
