@@ -18,26 +18,30 @@
 #include <WiFiUdp.h>
 #include <ros2arduino.h>
 
-template <typename MT>
 class ROS2SB : public ros2::Node{
 private:
-    QueueHandle_t SemPubMsg, SemSubMsg;
     WiFiUDP *udp;
     HardwareSerial *UART, *USB;
-    TaskHandle_t Pub, Uartrx;
-    ros2::Publisher<MT> template <typename MT> *_publisher;
-    static void cbSub(MT, void *);
-    static void cbPub(void *);
-    static void watchUART(void *);
 public:
     static ROS2SB* thisPtr;
-    ROS2SB(HardwareSerial);
+    ROS2SB(HardwareSerial*);
     ROS2SB(String, String, String, uint16_t);
-    void setPublishMsg(MT);
-    void getSubscribeMsg(MT);
-    void sendUART(MT);
-    void begin(String, String);
-    void stop(String, String);
 };
+
+ROS2SB::ROS2SB(HardwareSerial *USB):Node("StackBridge"){
+    ROS2SB::thisPtr = this;
+    this->USB = USB;
+    this->USB->begin(115200);
+    while(!this->USB);
+    ros2::init(this->USB);
+}
+
+ROS2SB::ROS2SB(String ssid, String pw, String agip, uint16_t agport):Node("StackBridge"){
+    ROS2SB::thisPtr = this;
+    this->udp = new WiFiUDP();
+    WiFi.begin(ssid.c_str(), pw.c_str());
+    while (WiFi.status() != WL_CONNECTED);
+    ros2::init(this->udp, agip.c_str(), agport);
+}
 
 #endif
