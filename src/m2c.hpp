@@ -16,10 +16,10 @@
 
 #include <ros2sb.hpp>
 
-template <typename MT, typename ST>
+template <typename MT>
 class M2C : public ROS2SB{
 private:
-    QueueHandle_t SemSubMsg;
+    QueueHandle_t QueSubMsg;
     static void cbSub(MT, void *);
 public:
     M2C();

@@ -24,20 +24,28 @@ private:
     HardwareSerial *UART, *USB;
 public:
     static ROS2SB* thisPtr;
-    ROS2SB(HardwareSerial*);
-    ROS2SB(String, String, String, uint16_t);
+    ROS2SB(HardwareSerial*, HardwareSerial*);
+    ROS2SB(HardwareSerial*, String, String, String, uint16_t);
 };
 
-ROS2SB::ROS2SB(HardwareSerial *USB):Node("StackBridge"){
+ROS2SB::ROS2SB(HardwareSerial *USB, HardwareSerial *UART):Node("StackBridge"){
     ROS2SB::thisPtr = this;
     this->USB = USB;
     this->USB->begin(115200);
+    if(UART != nullptr){
+        this->UART = UART;
+        this->UART->begin(115200);
+    }
     while(!this->USB);
     ros2::init(this->USB);
 }
 
-ROS2SB::ROS2SB(String ssid, String pw, String agip, uint16_t agport):Node("StackBridge"){
+ROS2SB::ROS2SB(HardwareSerial *UART, String ssid, String pw, String agip, uint16_t agport):Node("StackBridge"){
     ROS2SB::thisPtr = this;
+    if(UART != nullptr){
+        this->UART = UART;
+        this->UART->begin(115200);
+    }
     this->udp = new WiFiUDP();
     WiFi.begin(ssid.c_str(), pw.c_str());
     while (WiFi.status() != WL_CONNECTED);
