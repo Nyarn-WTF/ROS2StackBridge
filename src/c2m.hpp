@@ -21,7 +21,7 @@ template <typename MT>
 class C2M : public ROS2SB{
 private:
     QueueHandle_t QuePubMsg;
-    TaskHandle_t pub;
+    TaskHandle_t pub, watcher;
     ros2::Publisher<MT> *_publisher;
     static void cbPub(void*);
     static void watchClient(void*);
@@ -74,12 +74,10 @@ C2M<MT>::watchClient(void *conv){
     MT *msg;
     char buff[1024];
     while(1){
-        if(_this->UART != nullptr){
-            //このへんでUARTからのデータを変換
-            uint len = _this->UART->readBytesUntil('\0', buff, 1024);
-            (void*)(conv)(*buff, msg, len);
-            setPublishMsg(msg);
-        } 
+        //このへんでUARTからのデータを変換
+        uint len = _this->UART->readBytesUntil('\0', buff, 1024);
+        (void*)(conv)(*buff, msg, len);
+        setPublishMsg(msg);
     }
 }
 
@@ -95,6 +93,10 @@ C2M<MT>::beginBridge(String topicName){
     this->topicName = topicName;
     this->_publisher = this->createPublisher(topicName.c_str());
     xTaskCreatePinnedToCore(this->cbPub, "cbPub", 1024*8, NULL, 1, this->pub, CONFIG_ARDUINO_RUN_CORE1);
+    if(this->UART != nullptr){
+        xTaskCreatePinnedToCore(this->watchClient, "watchClient", 1024*8, NULL, 1, this->watcher, CONFIG_ARDUINO_RUN_CORE1);
+    }
+
 }
 
 template <typename MT>

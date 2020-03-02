@@ -13,7 +13,7 @@
 
 #ifndef _M2C_
 #define _M2C_
-
+#include <Arduino.h>
 #include <ros2sb.hpp>
 
 template <typename MT>
@@ -22,11 +22,46 @@ private:
     QueueHandle_t QueSubMsg;
     static void cbSub(MT, void *);
 public:
-    M2C();
-    void getSubscribeMsg(MT);
-    void sendUART();
-    void begin(String);
-    void stop();
+    M2C(HardwareSerial*, HardwareSerial*);
+    M2C(HardwareSerial*, String, String, String, uint16_t);
+    MT getSubscribeMsg();
+    void sendClient();
+    void beginBridge(String);
+    void stopBridge();
 };
+
+template <typename MT>
+M2C<MT>::M2C(HardwareSerial*mUART, HardwareSerial* mUSB):ROS2SB(mUART, mUSB){
+
+}
+
+template <typename MT>
+M2C<MT>::M2C(HardwareSerial *mUART, String ssid, String pw, String agip, uint16_t agport):ROS2SB(mUART, ssid, pw, agip, agport){
+    
+}
+
+template <typename MT>
+MT
+M2C<MT>::getSubscribeMsg(){
+
+}
+
+template <typename MT>
+void 
+M2C<MT>::sendClient(){
+
+}
+
+template <typename MT>
+void 
+M2C<MT>::beginBridge(String topicName){
+
+}
+
+template <typename MT>
+void 
+M2C<MT>::stopBridge(){
+
+}
 
 #endif
